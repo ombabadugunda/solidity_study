@@ -26,11 +26,7 @@ contract Banker {
     function getBalance() public view returns(uint){
         return address(this).balance;
     }
-    
-    function _checkAccount(address client, uint amount) internal view returns(bool) {
-        return (loans[client] == amount);
-    }
-
+   
     function lend(uint amount) public {
         require(getBalance() >= amount, "Contract doesn`t have enough money");
         address payable client = payable(msg.sender);
