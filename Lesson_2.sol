@@ -11,14 +11,16 @@ contract Banker {
         owner = msg.sender;
     }
     
-    event Event(address client);
+    event PayEvent(address client, uint value, uint timestamp);
+    event LendEvent(address client, uint value, uint timestamp);
+    event PaybackEvent(address client, uint value, uint timestamp);
 
     receive() external payable {
         pay();
     }
 
     function pay() public payable {
-        emit Event(msg.sender);
+        emit PayEvent(msg.sender, msg.value, block.number);
     }
 
     function getBalance() public view returns(uint){
@@ -33,6 +35,7 @@ contract Banker {
         require(getBalance() >= amount, "Contract doesn`t have enough money");
         address payable client = payable(msg.sender);
         loans[client] += amount;
+        emit LendEvent(msg.sender, msg.value, block.number);
     }
 
     function payback() public payable{
@@ -40,5 +43,6 @@ contract Banker {
         require(loans[client] > 0, "Nothing to payback");
         require(loans[client] >= msg.value, "Payback amount is bigger than your loan");
         loans[client] -= msg.value;
+        emit PaybackEvent(msg.sender, msg.value, block.number);
     }
 }
